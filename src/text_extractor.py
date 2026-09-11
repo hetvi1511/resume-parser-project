@@ -3,14 +3,31 @@ from pypdf import PdfReader
 from docx import Document
 
 
+from pypdf import PdfReader
+
+
 def extract_text_from_pdf(file_path: str) -> str:
-    """Extract text from a PDF file."""
+    """
+    Extract text from a PDF while attempting to preserve
+    the document's visual layout and line structure.
+    """
 
     reader = PdfReader(file_path)
+
     pages = []
 
     for page in reader.pages:
-        text = page.extract_text()
+
+        try:
+            # Layout mode preserves line structure much better
+            # for many resumes.
+            text = page.extract_text(
+                extraction_mode="layout"
+            )
+
+        except TypeError:
+            # Fallback for older pypdf versions
+            text = page.extract_text()
 
         if text:
             pages.append(text)

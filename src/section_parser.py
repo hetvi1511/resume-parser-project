@@ -58,25 +58,40 @@ SECTION_ALIASES = {
 
 def normalize_heading(line: str) -> str:
     """
-    Normalize a possible section heading so it can be
-    compared against known section names.
-    """
+    Normalize possible section headings.
 
-    return line.strip().lower().rstrip(":")
+    Handles headings such as:
+    WORK EXPERIENCE
+    Work Experience
+    ProfessionalExperience
+    """
+    line = line.strip().lower().rstrip(":")
+
+    # Remove spaces, underscores, and hyphens so that
+    # "Professional Experience" and "ProfessionalExperience"
+    # are treated the same.
+    line = line.replace(" ", "")
+    line = line.replace("_", "")
+    line = line.replace("-", "")
+
+    return line
 
 
 def detect_section(line: str) -> str | None:
     """
-    Check whether a line is a known resume section heading.
-
-    Returns the standardized section name if found.
-    Otherwise returns None.
+    Detect known resume section headings.
     """
 
     normalized = normalize_heading(line)
 
     for section_name, aliases in SECTION_ALIASES.items():
-        if normalized in aliases:
+
+        normalized_aliases = {
+            normalize_heading(alias)
+            for alias in aliases
+        }
+
+        if normalized in normalized_aliases:
             return section_name
 
     return None

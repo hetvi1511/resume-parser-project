@@ -9,3 +9,5 @@ data/resumes/*
 
 output/*
 !output/.gitkeep
+
+dev_tests/
